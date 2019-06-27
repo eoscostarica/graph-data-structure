@@ -294,12 +294,12 @@ describe("Graph", function() {
 
     it("Should serialize a graph.", function (){
       var graph = Graph()
-        .addEdge("a", "b", 1, JSON.stringify({
+        .addEdge("a", "b", 1, {
           'description': 'a->b'
-        }))
-        .addEdge("b", "c", 1, JSON.stringify({
+        })
+        .addEdge("b", "c", 1, {
           'description': 'b->c'
-        }));
+        });
       serialized = graph.serialize();
       checkSerialized(serialized);
     });

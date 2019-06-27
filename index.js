@@ -116,10 +116,10 @@ module.exports = function Graph(serialized){
   }
 
   // Gets the data of the given edge.
-  // Returns '{}' if no weight was previously set.
+  // Returns {} if no weight was previously set.
   function getEdgeData(u, v){
     var data = edgeData[encodeDataEdge(u, v)];
-    return data === undefined ? '{}' : data;
+    return data === undefined ? {} : data;
   }
 
   // Adds an edge from node u to node v.
