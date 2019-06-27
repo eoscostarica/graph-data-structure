@@ -11,6 +11,8 @@ module.exports = function Graph(serialized){
     removeEdge: removeEdge,
     setEdgeWeight: setEdgeWeight,
     getEdgeWeight: getEdgeWeight,
+    setEdgeData: setEdgeData,
+    getEdgeData: getEdgeData,
     indegree: indegree,
     outdegree: outdegree,
     depthFirstSearch: depthFirstSearch,
@@ -29,6 +31,8 @@ module.exports = function Graph(serialized){
   // Keys are string encodings of edges.
   // Values are weights (numbers).
   var edgeWeights = {};
+
+  var edgeData = {};
 
   // If a serialized graph was passed into the constructor, deserialize it.
   if(serialized){
@@ -86,9 +90,21 @@ module.exports = function Graph(serialized){
     return u + "|" + v;
   }
 
+  // Computes a string encoding of an edge,
+  // for use as a key in an object.
+  function encodeDataEdge (u, v) {
+    return u + "||" + v;
+  }
+
   // Sets the weight of the given edge.
   function setEdgeWeight(u, v, weight){
     edgeWeights[encodeEdge(u, v)] = weight;
+    return graph;
+  }
+
+  // Sets the data of the given edge.
+  function setEdgeData(u, v, data){
+    edgeData[encodeDataEdge(u, v)] = data;
     return graph;
   }
 
@@ -99,15 +115,26 @@ module.exports = function Graph(serialized){
     return weight === undefined ? 1 : weight;
   }
 
+  // Gets the data of the given edge.
+  // Returns '{}' if no weight was previously set.
+  function getEdgeData(u, v){
+    var data = edgeData[encodeDataEdge(u, v)];
+    return data === undefined ? '{}' : data;
+  }
+
   // Adds an edge from node u to node v.
   // Implicitly adds the nodes if they were not already added.
-  function addEdge(u, v, weight){
+  function addEdge(u, v, weight, data){
     addNode(u);
     addNode(v);
     adjacent(u).push(v);
 
     if (weight !== undefined) {
       setEdgeWeight(u, v, weight);
+    }
+
+    if (data !== undefined) {
+      setEdgeData(u, v, data);
     }
 
     return graph;
@@ -312,7 +339,8 @@ module.exports = function Graph(serialized){
         serialized.links.push({
           source: source,
           target: target,
-          weight: getEdgeWeight(source, target)
+          weight: getEdgeWeight(source, target),
+          data: getEdgeData(source, target)
         });
       });
     });
@@ -323,7 +351,7 @@ module.exports = function Graph(serialized){
   // Deserializes the given serialized graph.
   function deserialize(serialized){
     serialized.nodes.forEach(function (node){ addNode(node.id); });
-    serialized.links.forEach(function (link){ addEdge(link.source, link.target, link.weight); });
+    serialized.links.forEach(function (link){ addEdge(link.source, link.target, link.weight, link.data); });
     return graph;
   }
   
